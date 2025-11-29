@@ -8,6 +8,8 @@ import transaccionRoutes from './routes/TransaccionRoutes.js';
 import categoriaRoutes from './routes/CategoriaRoutes.js';
 import metasAhorroRoutes from './routes/metasAhorroRoutes.js';
 import reporteRoutes from './routes/reporteRoutes.js';
+import logrosRoutes from './routes/LogrosRoutes.js';
+import LogrosController from './controllers/LogrosController.js';
 
 
 import path from 'path';
@@ -30,6 +32,10 @@ app.use('/api/transacciones', transaccionRoutes);
 app.use('/api/categorias', categoriaRoutes);
 app.use('/api/metas', metasAhorroRoutes);
 app.use('/api/reportes', reporteRoutes);
+app.use('/api/logros', logrosRoutes);
+
+// Al iniciar la aplicación
+LogrosController.crearConstraintsSiNoExisten();
 
 app.use('/uploads', express.static(path.join(process.cwd(), 'uploads')));
 

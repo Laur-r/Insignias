@@ -10,13 +10,14 @@ import AjustesCuenta from "../pages/AjustesCuenta";
 import MetasAhorro from "../pages/MetasAhorro";
 import MiPerfil from "../pages/MiPerfil";
 import { useUser } from "../components/Context/UserContext"; // ✅ IMPORTAR useUser
+import MisLogros from "../pages/MisLogros";
 
 const sectionsData = [
   { id: "perfil", icon: "person", label: "Mi Perfil" },
   { id: "dashboard", icon: "dashboard", label: "Mis Finanzas" },
   { id: "registrar", icon: "app_registration", label: "Registrar" },
   { id: "educacion", icon: "school", label: "Educación" },
-  { id: "logros", icon: "emoji_events", label: "Mis Logros" },
+  { id: "logros", icon: "emoji_events", label: "Mis Logros" }, // ✅ NUEVO
   { id: "metas", icon: "savings", label: "Metas de Ahorro" },
   { id: "ajustes", icon: "settings", label: "Ajustes de Cuenta" },
 ];
@@ -107,6 +108,8 @@ const MenuPage = () => {
         return <MetasAhorro />;
       case "perfil":
         return <MiPerfil />;
+        case "logros":
+  return <MisLogros />;
       default:
         return (
           <>
