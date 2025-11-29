@@ -1,0 +1,567 @@
+/* MetasAhorro.css */
+
+.metas-ahorro-container {
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 24px;
+}
+
+/* Header */
+.metas-header {
+  margin-bottom: 32px;
+}
+
+.metas-title {
+  font-family: 'Poppins', sans-serif;
+  font-size: 2rem;
+  font-weight: 700;
+  color: #e0e7ff;
+  margin-bottom: 8px;
+}
+
+.metas-subtitle {
+  font-size: 1rem;
+  color: #94a3b8;
+}
+
+/* Stats Cards */
+.metas-stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 20px;
+  margin-bottom: 24px;
+}
+
+.stat-card {
+  background: linear-gradient(135deg, rgba(13, 23, 39, 0.8), rgba(0, 136, 225, 0.12));
+  border: 1px solid rgba(0, 196, 255, 0.2);
+  border-radius: 16px;
+  padding: 20px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  transition: all 0.3s ease;
+}
+
+.stat-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 24px rgba(0, 196, 255, 0.2);
+  border-color: #00c4ff;
+}
+
+.stat-icon {
+  width: 60px;
+  height: 60px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 12px rgba(0, 196, 255, 0.3);
+}
+
+.stat-icon .material-icons {
+  font-size: 28px;
+  color: white;
+}
+
+.stat-info {
+  flex: 1;
+}
+
+.stat-label {
+  font-size: 0.875rem;
+  color: #94a3b8;
+  margin-bottom: 4px;
+}
+
+.stat-value {
+  font-family: 'Poppins', sans-serif;
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: #e0e7ff;
+}
+
+/* Progreso Total */
+.progreso-total-card {
+  background: linear-gradient(135deg, rgba(13, 23, 39, 0.8), rgba(0, 136, 225, 0.12));
+  border: 1px solid rgba(0, 196, 255, 0.2);
+  border-radius: 16px;
+  padding: 24px;
+  margin-bottom: 24px;
+}
+
+.progreso-total-header {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+
+.progreso-total-title {
+  font-family: 'Poppins', sans-serif;
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: #e0e7ff;
+}
+
+.progreso-total-amount {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #00c4ff;
+}
+
+.progreso-total-bar {
+  height: 12px;
+  background: rgba(13, 23, 39, 0.6);
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+.progreso-total-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #0088e1, #00c4ff);
+  border-radius: 6px;
+  transition: width 0.3s ease;
+  box-shadow: 0 0 12px rgba(0, 196, 255, 0.6);
+}
+
+/* Tabs */
+.metas-tabs {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 24px;
+  flex-wrap: wrap;
+}
+
+.tab-btn {
+  padding: 12px 24px;
+  background: rgba(0, 136, 225, 0.1);
+  border: 1px solid rgba(0, 196, 255, 0.2);
+  border-radius: 8px;
+  color: #94a3b8;
+  font-size: 0.9375rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.tab-btn:hover {
+  background: rgba(0, 136, 225, 0.15);
+  border-color: #00c4ff;
+  color: #00c4ff;
+}
+
+.tab-btn.active {
+  background: #00c4ff;
+  border-color: #00c4ff;
+  color: #0d1727;
+  font-weight: 600;
+}
+
+.btn-nueva-meta {
+  margin-left: auto;
+  padding: 12px 24px;
+  background: linear-gradient(135deg, #0088e1, #00c4ff);
+  border: none;
+  border-radius: 8px;
+  color: white;
+  font-size: 0.9375rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 12px rgba(0, 196, 255, 0.3);
+}
+
+.btn-nueva-meta:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(0, 196, 255, 0.5);
+}
+
+/* Lista de metas */
+.metas-lista {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+  gap: 24px;
+}
+
+/* Meta Card */
+.meta-card {
+  background: linear-gradient(135deg, rgba(13, 23, 39, 0.9), rgba(0, 136, 225, 0.08));
+  border: 1px solid rgba(0, 196, 255, 0.2);
+  border-radius: 16px;
+  padding: 24px;
+  transition: all 0.3s ease;
+}
+
+.meta-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 24px rgba(0, 196, 255, 0.2);
+  border-color: #00c4ff;
+}
+
+.meta-card-header {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 20px;
+}
+
+.meta-imagen {
+  width: 60px;
+  height: 60px;
+  background: rgba(0, 196, 255, 0.1);
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 32px;
+  flex-shrink: 0;
+}
+
+.meta-info {
+  flex: 1;
+}
+
+.meta-titulo {
+  font-family: 'Poppins', sans-serif;
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #e0e7ff;
+  margin-bottom: 4px;
+}
+
+.meta-dias {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 0.875rem;
+  color: #94a3b8;
+}
+
+.meta-dias .material-icons {
+  font-size: 16px;
+}
+
+/* Progreso */
+.meta-progreso-section {
+  margin-bottom: 16px;
+}
+
+.meta-progreso-label {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.875rem;
+  color: #94a3b8;
+  margin-bottom: 8px;
+}
+
+.meta-porcentaje {
+  color: #00c4ff;
+  font-weight: 600;
+}
+
+.meta-progreso-bar {
+  height: 8px;
+  background: rgba(13, 23, 39, 0.6);
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.meta-progreso-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #0088e1, #00c4ff);
+  border-radius: 4px;
+  transition: width 0.3s ease;
+  box-shadow: 0 0 8px rgba(0, 196, 255, 0.6);
+}
+
+/* Montos */
+.meta-montos {
+  display: flex;
+  gap: 16px;
+  margin-bottom: 12px;
+}
+
+.meta-monto-item {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.meta-monto-label {
+  font-size: 0.875rem;
+  color: #94a3b8;
+}
+
+.meta-monto-valor {
+  font-family: 'Poppins', sans-serif;
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: #e0e7ff;
+}
+
+.meta-faltante {
+  padding: 10px;
+  background: rgba(0, 136, 225, 0.1);
+  border: 1px solid rgba(0, 196, 255, 0.2);
+  border-radius: 8px;
+  text-align: center;
+  font-size: 0.875rem;
+  color: #00c4ff;
+  margin-bottom: 16px;
+}
+
+.btn-editar-meta {
+  width: 100%;
+  padding: 12px;
+  background: linear-gradient(135deg, #0088e1, #00c4ff);
+  border: none;
+  border-radius: 8px;
+  color: white;
+  font-size: 0.9375rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.btn-editar-meta:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 16px rgba(0, 196, 255, 0.5);
+}
+
+.btn-aportar-meta {
+  width: 100%;
+  margin-top: 16px;
+  padding: 12px;
+  background: linear-gradient(135deg, #0088e1, #00c4ff);
+  border: none;
+  border-radius: 8px;
+  color: white;
+  font-size: 0.9375rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.btn-aportar-meta:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 16px rgba(0, 196, 255, 0.5);
+}
+
+/* Formulario */
+.meta-form-card {
+  background: linear-gradient(135deg, rgba(13, 23, 39, 0.95), rgba(0, 136, 225, 0.15));
+  border: 2px solid #00c4ff;
+}
+
+.meta-form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.meta-input {
+  width: 100%;
+  padding: 12px;
+  background: rgba(13, 23, 39, 0.6);
+  border: 1px solid rgba(0, 196, 255, 0.3);
+  border-radius: 8px;
+  color: #e0e7ff;
+  font-size: 0.9375rem;
+}
+
+.meta-input:focus {
+  outline: none;
+  border-color: #00c4ff;
+  box-shadow: 0 0 0 3px rgba(0, 196, 255, 0.1);
+}
+
+.meta-input-small {
+  width: 100%;
+  padding: 8px;
+  background: rgba(13, 23, 39, 0.6);
+  border: 1px solid rgba(0, 196, 255, 0.3);
+  border-radius: 8px;
+  color: #e0e7ff;
+  font-size: 0.875rem;
+}
+
+.meta-input-small:focus {
+  outline: none;
+  border-color: #00c4ff;
+}
+
+.meta-form-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.btn-agregar-meta {
+  flex: 1;
+  padding: 12px;
+  background: #00c4ff;
+  border: none;
+  border-radius: 8px;
+  color: #0d1727;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.btn-agregar-meta:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 16px rgba(0, 196, 255, 0.5);
+}
+
+
+.btn-editar-icon,
+.btn-eliminar-icon {
+  width: 48px;
+  height: 48px;
+  background: rgba(0, 136, 225, 0.1);
+  border: 1px solid rgba(0, 196, 255, 0.3);
+  border-radius: 8px;
+  font-size: 20px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.btn-editar-icon:hover {
+  background: rgba(0, 136, 225, 0.2);
+  border-color: #00c4ff;
+}
+
+.btn-eliminar-icon {
+  background: rgba(239, 68, 68, 0.1);
+  border-color: rgba(239, 68, 68, 0.3);
+}
+
+.btn-eliminar-icon:hover {
+  background: rgba(239, 68, 68, 0.2);
+  border-color: #ef4444;
+}
+
+/* Modal */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(13, 23, 39, 0.85);
+  backdrop-filter: blur(8px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.modal-edicion {
+  background: linear-gradient(135deg, rgba(30, 45, 87, 0.95), rgba(13, 23, 39, 0.95));
+  border: 1px solid rgba(0, 196, 255, 0.3);
+  border-radius: 16px;
+  padding: 32px;
+  width: 90%;
+  max-width: 500px;
+}
+
+.modal-edicion h2 {
+  font-family: 'Poppins', sans-serif;
+  color: #00c4ff;
+  margin-bottom: 24px;
+}
+
+.modal-actions {
+  display: flex;
+  gap: 12px;
+  margin-top: 24px;
+}
+
+.btn-cancelar,
+.btn-guardar,
+.btn-eliminar {
+  flex: 1;
+  padding: 12px;
+  border: none;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.btn-cancelar {
+  background: transparent;
+  border: 1px solid rgba(0, 196, 255, 0.4);
+  color: #00c4ff;
+}
+
+.btn-guardar {
+  background: linear-gradient(135deg, #0088e1, #00c4ff);
+  color: white;
+}
+
+.btn-eliminar {
+  background: #ef4444;
+  color: white;
+}
+
+.btn-cancelar:hover,
+.btn-guardar:hover,
+.btn-eliminar:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 16px rgba(0, 196, 255, 0.3);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .metas-lista {
+    grid-template-columns: 1fr;
+  }
+
+  .metas-stats {
+    grid-template-columns: 1fr;
+  }
+
+  .btn-nueva-meta {
+    margin-left: 0;
+    width: 100%;
+  }
+  /* Forzar color blanco en los íconos del formulario de metas */
+.btn-editar-icon .material-icons,
+.btn-eliminar-icon .material-icons {
+  color: white !important;  /* fuerza el color sobre cualquier estilo heredado */
+  font-size: 22px;
+  vertical-align: middle;
+}
+
+/* Estilo del botón editar */
+.btn-editar-icon {
+  background-color: transparent;
+  border: 1px solid #00bfff;
+  border-radius: 10px;
+  padding: 8px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.btn-editar-icon:hover {
+  background-color: #00bfff;
+}
+
+/* Estilo del botón eliminar */
+.btn-eliminar-icon {
+  background-color: transparent;
+  border: 1px solid #ff4d4d;
+  border-radius: 10px;
+  padding: 8px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.btn-eliminar-icon:hover {
+  background-color: #ff4d4d;
+}
+
+  
+}

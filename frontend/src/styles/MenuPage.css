@@ -1,0 +1,614 @@
+@import url("https://fonts.googleapis.com/icon?family=Material+Icons");
+
+/* ======================================================
+   MenuPage.css — CORREGIDO
+   - Navbar fijo
+   - Contenido centrado correctamente
+   ====================================================== */
+
+/* SCOPED RESET */
+.menu-container, .menu-container * {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+.menu-container {
+  font-family: "Inter", sans-serif;
+  background: linear-gradient(to bottom, #0d1727 0%, #0a2447 30%, #1e2d57 70%, #173e93 100%);
+  color: #e0e7ff;
+  min-height: 100vh;
+  .menu-container {
+  overflow: visible;
+}
+
+}
+
+/* ======================================================
+   ANIMATIONS
+   ====================================================== */
+@keyframes menu-pulse-glow {
+  0% { 
+    filter: drop-shadow(0 0 12px rgba(0, 196, 255, 0.5)); 
+    transform: scale(1); 
+  }
+  50% { 
+    filter: drop-shadow(0 0 18px rgba(0, 196, 255, 0.8)); 
+    transform: scale(1.05); 
+  }
+  100% { 
+    filter: drop-shadow(0 0 12px rgba(0, 196, 255, 0.5)); 
+    transform: scale(1); 
+  }
+}
+
+@keyframes menu-pulse-badge {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.1); }
+}
+
+@keyframes menu-fadeIn {
+  from { opacity: 0; transform: translateY(12px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* ======================================================
+   WRAPPER - BASE
+   ====================================================== */
+.menu-wrapper {
+  min-height: 100vh;
+  width: 100%;
+  background: linear-gradient(to bottom, #0d1727 0%, #0a2447 30%, #1e2d57 70%, #173e93 100%);
+}
+
+.menu-container {
+  position: relative;
+  min-height: 100vh;
+}
+
+/* ======================================================
+   SIDEBAR - FIJO
+   ====================================================== */
+.menu-sidebar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 260px;
+  height: 100vh;
+  background: linear-gradient(180deg, #0d1727 0%, #152238 100%);
+  border-right: 1px solid rgba(0, 196, 255, 0.15);
+  box-shadow: 4px 0 32px rgba(0, 136, 225, 0.12),
+              inset -1px 0 24px rgba(0, 196, 255, 0.06);
+  display: flex;
+  flex-direction: column;
+  padding: 28px 0;
+  z-index: 900;
+  overflow-y: auto; /* Añadido para scroll interno si es necesario */
+}
+
+/* ======================================================
+   LOGO
+   ====================================================== */
+.menu-logo {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 12px;
+}
+
+.menu-logo-img {
+  height: 120px;
+  width: auto;
+  object-fit: contain;
+  filter: drop-shadow(0 0 12px rgba(0, 196, 255, 0.5));
+  transition: transform 0.3s ease, filter 0.3s ease;
+  animation: menu-pulse-glow 3s ease-in-out infinite;
+}
+
+.menu-logo-img:hover {
+  transform: scale(1.05);
+  filter: drop-shadow(0 0 18px rgba(0, 196, 255, 0.8));
+}
+
+/* ======================================================
+   NAV
+   ====================================================== */
+.menu-sidebar nav {
+  flex: 1;
+  overflow-y: auto;
+  padding: 0 16px;
+}
+
+.menu-sidebar nav::-webkit-scrollbar { 
+  width: 4px;
+}
+.menu-sidebar nav::-webkit-scrollbar-track { 
+  background: rgba(0, 0, 0, 0.2);
+}
+.menu-sidebar nav::-webkit-scrollbar-thumb { 
+  background: rgba(0, 196, 255, 0.3); 
+  border-radius: 2px;
+}
+
+.menu-list {
+  list-style: none; 
+  padding: 0; 
+  margin: 0;
+}
+
+/* ======================================================
+   MENU ITEMS
+   ====================================================== */
+.menu-item {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 14px 18px;
+  color: #94a3b8;
+  font-size: 0.95rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  border-radius: 12px;
+  margin-bottom: 6px;
+  position: relative;
+  overflow: hidden;
+}
+
+.menu-item::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 4px;
+  height: 100%;
+  background: linear-gradient(180deg, #0088e1, #00c4ff);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  box-shadow: 0 0 12px rgba(0, 196, 255, 0.6);
+}
+
+.menu-item::after {
+  content: '';
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 0;
+  height: 0;
+  background: radial-gradient(circle, rgba(0, 196, 255, 0.15) 0%, transparent 70%);
+  transform: translate(-50%, -50%);
+  transition: all 0.4s ease;
+  z-index: -1;
+  border-radius: 12px;
+}
+
+.menu-icon {
+  font-size: 22px;
+  color: #64748b;
+  transition: all 0.3s ease;
+  z-index: 1;
+}
+
+.menu-item-label {
+  z-index: 1;
+}
+
+/* HOVER */
+.menu-item:hover {
+  background: rgba(0, 136, 225, 0.08);
+  color: #e0e7ff;
+  transform: translateX(6px);
+}
+
+.menu-item:hover::before { 
+  opacity: 1; 
+}
+
+.menu-item:hover::after { 
+  width: 100%; 
+  height: 100%; 
+}
+
+.menu-item:hover .menu-icon { 
+  color: #00c4ff; 
+  filter: drop-shadow(0 0 8px rgba(0, 196, 255, 0.6)); 
+}
+
+/* ACTIVE */
+.menu-item.active {
+  background: linear-gradient(90deg, rgba(0, 136, 225, 0.15), rgba(0, 196, 255, 0.1));
+  color: #ffffff;
+  box-shadow: inset 0 0 20px rgba(0, 196, 255, 0.15),
+              0 2px 16px rgba(0, 196, 255, 0.2);
+  border: 1px solid rgba(0, 196, 255, 0.2);
+}
+
+.menu-item.active::before { 
+  opacity: 1; 
+}
+
+.menu-item.active .menu-icon {
+  color: #00e0ff;
+  filter: drop-shadow(0 0 10px rgba(0, 224, 255, 0.8));
+}
+
+/* ======================================================
+   MAIN CONTENT - ARREGLADO
+   ====================================================== */
+.menu-main-content {
+  margin-left: 260px; /* Espacio para el sidebar */
+  flex: 1;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background: linear-gradient(to bottom, #0d1727 0%, #0a2447 30%, #1e2d57 70%, #173e93 100%);
+  width: calc(100% - 260px); /* CRÍTICO: Ancho exacto */
+}
+
+/* ======================================================
+   NAVBAR - AHORA SÍ FIJO
+   ====================================================== */
+.menu-navbar {
+  position: fixed; /* Cambiado de sticky a fixed */
+  top: 0;
+  left: 260px; /* Empieza después del sidebar */
+  right: 0;
+  width: calc(100% - 260px); /* Ancho exacto */
+  height: 72px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 40px;
+  background: linear-gradient(90deg, rgba(13, 23, 39, 0.95) 0%, rgba(0, 136, 225, 0.15) 50%, rgba(13, 23, 39, 0.95) 100%);
+  backdrop-filter: blur(10px);
+  box-shadow: 0 4px 24px rgba(0, 136, 225, 0.15), inset 0 -1px 0 rgba(0, 196, 255, 0.2);
+  border-bottom: 1px solid rgba(0, 196, 255, 0.15);
+  z-index: 800; /* Menor que sidebar pero mayor que contenido */
+}
+
+.menu-navbar-left { 
+  display: flex; 
+  align-items: center; 
+  gap: 20px; 
+}
+
+.menu-navbar-title {
+  font-size: 1.4rem;
+  font-weight: 600;
+  color: #e0e7ff;
+  font-family: "Poppins", sans-serif;
+  text-shadow: 0 0 12px rgba(96, 165, 250, 0.3);
+}
+
+.menu-navbar-user {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+.menu-avatar {
+  width: 45px;
+  height: 45px;
+  border-radius: 50%;
+  object-fit: cover; /*  evita que la imagen se distorsione */
+  border: 2px solid #ddd; /* opcional: borde suave */
+}
+
+/* ======================================================
+   NOTIFICATION BUTTON
+   ====================================================== */
+.menu-notification-btn {
+  position: relative;
+  background: rgba(0, 136, 225, 0.08);
+  border: 1px solid rgba(0, 196, 255, 0.2);
+  width: 42px;
+  height: 42px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.menu-notification-btn:hover {
+  background: rgba(0, 136, 225, 0.15);
+  border-color: #0088e1;
+  box-shadow: 0 0 16px rgba(0, 196, 255, 0.3), inset 0 0 12px rgba(0, 196, 255, 0.1);
+  transform: translateY(-2px);
+}
+
+.menu-notification-btn span {
+  color: #00c4ff;
+  font-size: 22px;
+  filter: drop-shadow(0 0 4px rgba(0, 196, 255, 0.4));
+}
+
+.menu-notification-badge {
+  position: absolute;
+  top: -4px;
+  right: -4px;
+  width: 20px;
+  height: 20px;
+  background: linear-gradient(135deg, #ef4444, #dc2626);
+  border-radius: 50%;
+  font-size: 0.7rem;
+  color: white;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 2px solid #0d1727;
+  box-shadow: 0 0 12px rgba(239, 68, 68, 0.6);
+  animation: menu-pulse-badge 2s ease-in-out infinite;
+}
+
+/* ======================================================
+   USER PROFILE
+   ====================================================== */
+.menu-user-profile {
+  position: relative; /* Añadido para el dropdown */
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 6px 14px 6px 6px;
+  background: rgba(0, 136, 225, 0.08);
+  border: 1px solid rgba(0, 196, 255, 0.2);
+  border-radius: 14px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.menu-user-profile:hover {
+  background: rgba(0, 136, 225, 0.15);
+  border-color: #0088e1;
+  box-shadow: 0 0 16px rgba(0, 196, 255, 0.3), inset 0 0 12px rgba(0, 196, 255, 0.1);
+  transform: translateY(-2px);
+}
+
+.menu-avatar {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  border: 2px solid #0088e1;
+  box-shadow: 0 0 12px rgba(0, 136, 225, 0.5), inset 0 0 8px rgba(0, 196, 255, 0.2);
+}
+
+.menu-user-info { 
+  line-height: 1.3; 
+}
+
+.menu-user-name { 
+  font-weight: 600; 
+  color: #e0e7ff; 
+  font-size: 0.9rem; 
+}
+
+.menu-user-email { 
+  font-size: 0.8rem; 
+  color: #94a3b8; 
+}
+
+/* Dropdown de usuario */
+.menu-user-dropdown {
+  position: absolute;
+  top: 60px;
+  right: 0;
+  background: rgba(13, 23, 39, 0.98);
+  border: 1px solid rgba(0, 196, 255, 0.2);
+  border-radius: 12px;
+  padding: 8px 0;
+  width: 160px;
+  box-shadow: 0 8px 24px rgba(0, 136, 225, 0.25);
+  z-index: 1000;
+  display: flex;
+  flex-direction: column;
+}
+
+.menu-user-dropdown .menu-btn {
+  width: 100%;
+  background: none;
+  border: none;
+  padding: 10px 16px;
+  text-align: left;
+  color: #e0e7ff;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.menu-user-dropdown .menu-btn:hover {
+  background: rgba(0, 136, 225, 0.12);
+}
+
+/* ======================================================
+   SECTIONS - CON WRAPPER
+   ====================================================== */
+.menu-content-wrapper {
+  margin-top: 72px; /* Altura del navbar */
+  min-height: calc(100vh - 72px);
+}
+
+.menu-section {
+  display: none;
+  padding: 32px 40px;
+  animation: menu-fadeIn 0.4s ease forwards;
+}
+
+.menu-section.active-section { 
+  display: block; 
+}
+
+/* ======================================================
+   SECTION CONTENT - CENTRADO Y SIN PADDING EXTRA
+   ====================================================== */
+.menu-section-content {
+  background: transparent; /* Removido fondo para que Dashboard use el suyo */
+  padding: 0; /* Sin padding para que Dashboard controle su espacio */
+  border-radius: 0;
+  border: none;
+  box-shadow: none;
+  max-width: 100%; /* Ocupa todo el ancho disponible */
+  margin: 0 auto; /* Centrado */
+}
+
+/* Solo para secciones que NO son Dashboard ni Registrar */
+.menu-section-content > h2 {
+  font-family: "Poppins", sans-serif;
+  font-size: 2rem;
+  background: linear-gradient(90deg, #0088e1, #00c4ff);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  margin-bottom: 20px;
+  padding: 0 32px; /* Padding para títulos */
+}
+
+.menu-section-content > p {
+  color: #94a3b8;
+  line-height: 1.6;
+  margin-bottom: 24px;
+  font-size: 1rem;
+  padding: 0 32px; /* Padding para párrafos */
+}
+
+/* ======================================================
+   WELCOME SECTION
+   ====================================================== */
+.welcome-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: rgba(13, 23, 39, 0.8);
+  padding: 40px;
+  border-radius: 16px;
+  box-shadow: 0 4px 16px rgba(0, 136, 225, 0.1);
+  border: 1px solid rgba(0, 196, 255, 0.15);
+}
+
+.welcome-text {
+  flex: 1;
+  color: #e0e7ff;
+}
+
+.welcome-text h2 {
+  font-size: 3rem;
+  font-weight: 700;
+  margin-bottom: 20px;
+  background: linear-gradient(90deg, #0088e1, #00c4ff);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.welcome-text p {
+  font-size: 1.25rem;
+  color: #94a3b8;
+  padding: 0; /* Sin padding aquí */
+}
+
+.welcome-bot {
+  flex: 0 0 300px;
+  display: flex;
+  justify-content: center;
+}
+
+.bot-image {
+  width:120%;
+  height: auto;
+  border-radius: 16px;
+}
+
+/* ======================================================
+   RESPONSIVE
+   ====================================================== */
+@media (max-width: 900px) {
+  .menu-sidebar { 
+    width: 220px; 
+  }
+  .menu-main-content { 
+    margin-left: 220px;
+    width: calc(100% - 220px);
+  }
+  .menu-navbar {
+    left: 220px;
+    width: calc(100% - 220px);
+  }
+  .menu-logo-img {
+    height: 100px;
+  }
+  .menu-navbar { 
+    padding: 0 28px; 
+  }
+  .menu-section { 
+    padding: 28px; 
+  }
+}
+
+@media (max-width: 768px) {
+  .menu-sidebar { 
+    width: 80px; 
+  }
+  .menu-main-content { 
+    margin-left: 80px;
+    width: calc(100% - 80px);
+  }
+  .menu-navbar {
+    left: 80px;
+    width: calc(100% - 80px);
+    padding: 0 20px;
+  }
+  
+  .menu-item .menu-item-label { 
+    display: none; 
+  }
+  
+  .menu-logo-img { 
+    height: 57px; 
+  }
+  
+  .menu-user-info { 
+    display: none; 
+  }
+  
+  .menu-section { 
+    padding: 20px; 
+  }
+  
+  .menu-navbar-title { 
+    font-size: 1.1rem; 
+  }
+
+  .welcome-container {
+    flex-direction: column;
+    gap: 20px;
+  }
+
+  .welcome-text h2 {
+    font-size: 2rem;
+  }
+
+  .welcome-bot {
+    flex: 0 0 auto;
+    width: 200px;
+  }
+}
+
+/* ======================================================
+   UTILITIES
+   ====================================================== */
+.menu-btn {
+  padding: 8px 12px;
+  border-radius: 10px;
+  background: rgba(0, 136, 225, 0.06);
+  border: 1px solid rgba(0, 196, 255, 0.06);
+  color: #eaf6ff;
+  cursor: pointer;
+  transition: background 0.2s ease, transform 0.15s ease;
+  font-size: 0.9rem;
+  font-weight: 500;
+}
+
+.menu-btn:hover { 
+  background: rgba(0, 136, 225, 0.12); 
+  transform: translateY(-2px); 
+}

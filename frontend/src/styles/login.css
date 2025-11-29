@@ -1,0 +1,315 @@
+/* ========================= */
+/* 🔹 Contenedor general */
+/* ========================= */
+.login-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh; /* Centra el marco en la pantalla */
+  font-family: 'Poppins', 'Inter', sans-serif;
+  padding: 20px;
+  background: none;   /* 🔹 Sin fondo */
+}
+
+/* ========================= */
+/* 🔹 Marco principal */
+/* ========================= */
+.login-box {
+  display: flex;
+  width: 100%;
+  max-width: 1100px;   /* Ancho máximo */
+  height: 700px;       /* 🔹 Altura reducida del marco */
+  border-radius: 20px;
+  overflow: hidden;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.5);
+  background: #0b1633;
+}
+
+/* ========================= */
+/* 🔹 Columna izquierda */
+/* ========================= */
+.brand-section {
+  flex: 1;
+  background: linear-gradient(160deg, #0052cc, #003a8c);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 40px 20px;
+  text-align: center;
+  color: white;
+}
+
+.brand-section .brand-logo {
+  width: 500px;
+  margin-bottom: 40px;
+}
+
+.brand-section .bot-container {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.bot-container .bot-img {
+  max-width: 300px;
+  width: 100%;
+}
+
+/* ========================= */
+/* 🔹 Columna derecha */
+/* ========================= */
+.form-section {
+  flex: 1;
+  background: #0b1633;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 60px 40px;
+}
+
+.form-wrapper {
+  width: 100%;
+  max-width: 400px;
+  color: #fff;
+}
+
+/* ========================= */
+/* 🔹 Encabezado Bienvenido */
+/* ========================= */
+.welcome-header {
+  text-align: center;
+  margin-bottom: 30px;
+}
+
+.welcome-header h1 {
+  font-size: 2.4rem;
+  font-weight: 700;
+  margin-bottom: 12px;
+  background: linear-gradient(90deg, #0088e1, #00c4ff);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  text-shadow: 0 0 18px rgba(0, 136, 225, 0.65),
+               0 0 32px rgba(0, 196, 255, 0.4);
+  letter-spacing: -0.5px;
+}
+
+.welcome-header p {
+  font-size: 1rem;
+  color: #cbd5e1;
+  margin-bottom: 30px;
+}
+
+/* ========================= */
+/* 🔹 Inputs */
+/* ========================= */
+.input-container {
+  margin-bottom: 20px;
+}
+
+.input-field {
+  width: 100%;
+  padding: 14px 16px;
+  border-radius: 10px;
+  border: 1px solid #1e3a8a;
+  background: #0f1c33;
+  color: #fff;
+  font-size: 0.95rem;
+  outline: none;
+  transition: all 0.3s ease;
+}
+
+.input-field:focus {
+  border-color: #00c4ff;
+  box-shadow: 0 0 10px rgba(0, 196, 255, 0.4);
+}
+
+.input-error {
+  border-color: #ff4d4d;
+}
+
+.error-text {
+  font-size: 0.8rem;
+  color: #ff4d4d;
+  margin-top: 5px;
+  display: block;
+}
+
+/* ========================= */
+/* 🔹 Botones */
+/* ========================= */
+.btn {
+  padding: 14px;
+  border-radius: 10px;
+  border: none;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 1rem;
+  transition: all 0.3s ease;
+}
+
+.btn-full-width {
+  width: 100%;
+}
+
+.btn-primary {
+  background: linear-gradient(90deg, #0088e1, #00c4ff);
+  color: #fff;
+  box-shadow: 0px 6px 20px rgba(0, 136, 225, 0.35);
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.btn-primary:hover {
+  transform: translateY(-2px) scale(1.03);
+  box-shadow: 0px 8px 28px rgba(0, 136, 225, 0.55);
+  background: linear-gradient(90deg, #00aaff, #00d4ff);
+}
+
+.btn-secondary {
+  background: transparent;
+  border: 2px solid #00c4ff;
+  color: #00c4ff;
+}
+
+.btn-secondary:hover {
+  background: rgba(0, 196, 255, 0.08);
+  box-shadow: 0 0 10px rgba(0, 196, 255, 0.3);
+}
+
+.form-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  margin-bottom: 20px;
+}
+
+.google-login-button {
+  display: block;
+  width: 100%;
+  max-width: 300px;
+  margin: auto;
+  padding: 12px 20px;
+  background: none;
+  border: none;
+  color: #00c4ff;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: color 0.3s ease;
+}
+
+.google-login-button:hover {
+  color: #66ccff;
+}
+
+
+/* ========================= */
+/* 🔹 Link de olvidar contraseña */
+/* ========================= */
+.form-footer {
+  text-align: center;
+}
+
+.forgot-password-link {
+  background: none;
+  border: none;
+  color: #00c4ff;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: color 0.3s ease;
+}
+.forgot-password-header h1 {
+  background: none;
+  border: none;
+  color: #00c4ff;
+  font-size: 2rem;
+  cursor: pointer;
+  transition: color 0.3s ease;
+}
+
+.forgot-password-link:hover {
+  color: #66ccff;
+}
+
+/* ========================= */
+/* 🔹 Responsive Adaptations */
+/* ========================= */
+@media (max-width: 1024px) {
+  .login-box {
+    flex-direction: row; /* 🔹 Sigue en columnas */
+    height: auto;
+  }
+
+  .brand-section {
+    flex: 0.9; /* Un poco más pequeña */
+    padding: 20px 15px;
+  }
+
+  .brand-section .brand-logo {
+    width: 220px;
+    margin-bottom: 20px;
+  }
+
+  .bot-container .bot-img {
+    max-width: 160px;
+  }
+
+  .form-section {
+    flex: 1.1;
+    padding: 30px 20px;
+  }
+
+  .form-wrapper {
+    max-width: 100%;
+  }
+}
+
+@media (max-width: 768px) {
+  .login-container {
+    padding: 10px;
+  }
+
+  .login-box {
+    flex-direction: row; /* 🔹 Se mantiene lado a lado */
+    height: auto;
+    border-radius: 12px;
+  }
+
+  .brand-section {
+    flex: 0.8;
+    padding: 15px 10px;
+  }
+
+  .brand-section .brand-logo {
+    width: 160px;
+    margin-bottom: 10px;
+  }
+
+  .bot-container .bot-img {
+    max-width: 100px;
+  }
+
+  .form-section {
+    flex: 1.2;
+    padding: 20px 15px;
+  }
+
+  .welcome-header h1 {
+    font-size: 1.2rem;
+  }
+
+  .welcome-header p {
+    font-size: 0.8rem;
+  }
+
+  .input-field {
+    font-size: 0.85rem;
+    padding: 10px 12px;
+  }
+
+  .btn {
+    font-size: 0.9rem;
+    padding: 10px;
+  }
+}

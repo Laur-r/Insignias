@@ -1,0 +1,66 @@
+/* ==== Reset básico ==== */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+/* ==== Altura completa para app ==== */
+html, body, #root {
+  height: 100%;
+}
+
+/* ==== Fuente y colores globales ==== */
+body {
+  font-family: "Inter", sans-serif;
+  font-weight: 400;
+  line-height: 1.5;
+  color: #111;
+  background-color: #ffffff;
+}
+
+/* ==== Títulos ==== */
+h1, h2, h3, h4, h5, h6 {
+  font-family: "Poppins", sans-serif;
+  font-weight: 600;
+  margin-bottom: 0.5em;
+  color: #111;
+}
+
+/* ==== Links ==== */
+a {
+  font-weight: 500;
+  color: #2563eb;
+  text-decoration: none;
+}
+a:hover {
+  color: #1e4fd0;
+}
+
+/* ==== Botones base (se complementa con Button.css) ==== */
+button {
+  font-family: inherit;
+  font-size: 1rem;
+  cursor: pointer;
+  border: none;
+  outline: none;
+  transition: background 0.3s ease;
+}
+
+/* ==== Listas ==== */
+ul {
+  list-style: none;
+  padding: 0;
+}
+/* === ACCESIBILIDAD VISUAL CON TECLADO === */
+:focus-visible {
+  outline: 3px solid #3fa34d; /* Verde Fintrax */
+  outline-offset: 3px;
+  border-radius: 6px;
+  transition: outline 0.2s ease-in-out;
+}
+
+/* Asegurar que los elementos clicables tengan foco */
+button, a, input, select, textarea {
+  outline: none;
+}
