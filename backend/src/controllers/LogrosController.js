@@ -35,17 +35,17 @@ export default class LogrosController {
         LEFT JOIN insignias_progreso ip 
           ON i.id = ip.insignia_id AND ip.usuario_documento = $1
         WHERE i.estado = 'activa'
-        ORDER BY i.tipo, i.id
+        ORDER BY i.tipo, i.valor_requerido, i.id
       `;
 
       const { rows } = await pool.query(query, [usuarioDocumento]);
 
-      // Agrupar por tipo
+      // ✅ MEJORADO: Agrupar por tipo manteniendo TODAS las insignias (incluso niveles)
       const insigniasPorTipo = {
-        educacion: rows.filter(i => i.tipo === 'educacion'),
-        ahorro: rows.filter(i => i.tipo === 'ahorro'),
-        habitos: rows.filter(i => i.tipo === 'habitos'),
-        transacciones: rows.filter(i => i.tipo === 'transacciones')
+        educacion: rows.filter(i => i.tipo === 'educacion').sort((a, b) => a.valor_requerido - b.valor_requerido),
+        ahorro: rows.filter(i => i.tipo === 'ahorro').sort((a, b) => a.valor_requerido - b.valor_requerido),
+        habitos: rows.filter(i => i.tipo === 'habitos').sort((a, b) => a.valor_requerido - b.valor_requerido),
+        transacciones: rows.filter(i => i.tipo === 'transacciones').sort((a, b) => a.valor_requerido - b.valor_requerido)
       };
 
       // Obtener estadísticas del usuario
@@ -140,13 +140,78 @@ export default class LogrosController {
             valorActual = parseInt(metasCompletadasRows[0].total);
             break;
 
-          case 'login_streak':
-            // Implementar lógica de racha de login
-            valorActual = 0; // Por ahora
+          case 'metas_largo_plazo_completadas':
+            // Metas completadas que duraron más de 6 meses
+            const metasLargoPlazoQuery = `
+              SELECT COUNT(*) as total 
+              FROM metas_ahorro 
+              WHERE usuario_documento = $1 
+                AND estado = 'completada'
+                AND fecha_completada IS NOT NULL
+                AND EXTRACT(EPOCH FROM (fecha_completada - fecha_creacion))/86400 >= 180
+            `;
+            const { rows: metasLargoPlazoRows } = await pool.query(metasLargoPlazoQuery, [usuarioDocumento]);
+            valorActual = parseInt(metasLargoPlazoRows[0].total);
+            break;
+
+          case 'metas_activas_consecutivas':
+            // Calcular meses consecutivos con metas activas
+            const mesesConsecutivosQuery = `
+              WITH meses_con_metas AS (
+                SELECT DISTINCT 
+                  DATE_TRUNC('month', fecha_creacion) as mes
+                FROM metas_ahorro
+                WHERE usuario_documento = $1
+                  AND estado IN ('activa', 'completada')
+              ),
+              meses_numerados AS (
+                SELECT 
+                  mes,
+                  ROW_NUMBER() OVER (ORDER BY mes) as rn,
+                  mes - (INTERVAL '1 month' * ROW_NUMBER() OVER (ORDER BY mes)) as grupo
+                FROM meses_con_metas
+              ),
+              rachas AS (
+                SELECT 
+                  grupo,
+                  COUNT(*) as meses_consecutivos
+                FROM meses_numerados
+                GROUP BY grupo
+              )
+              SELECT COALESCE(MAX(meses_consecutivos), 0) as max_racha
+              FROM rachas
+            `;
+            const { rows: rachaRows } = await pool.query(mesesConsecutivosQuery, [usuarioDocumento]);
+            valorActual = parseInt(rachaRows[0].max_racha);
+            break;
+
+          case 'uso_semanal':
+            // Calcular semanas con al menos 3 usos
+            const usoSemanalQuery = `
+              WITH semanas_uso AS (
+                SELECT 
+                  DATE_TRUNC('week', fecha_registro) as semana,
+                  COUNT(DISTINCT DATE(fecha_registro)) as dias_usados
+                FROM (
+                  SELECT fecha_registro FROM transacciones WHERE usuario_documento = $1
+                  UNION ALL
+                  SELECT fecha_creacion FROM metas_ahorro WHERE usuario_documento = $1
+                  UNION ALL
+                  SELECT fecha_inscripcion FROM inscripciones WHERE usuario_documento = $1
+                ) as actividades
+                GROUP BY semana
+                HAVING COUNT(DISTINCT DATE(fecha_registro)) >= 3
+              )
+              SELECT COUNT(*) as semanas_activas
+              FROM semanas_uso
+            `;
+            const { rows: usoRows } = await pool.query(usoSemanalQuery, [usuarioDocumento]);
+            valorActual = parseInt(usoRows[0].semanas_activas);
             break;
 
           case 'resumen_mensual':
-            valorActual = 0; // Por implementar
+            // Por implementar - puede ser una tabla separada de resúmenes mensuales
+            valorActual = 0;
             break;
 
           case 'transacciones_registradas':
@@ -160,7 +225,7 @@ export default class LogrosController {
             break;
         }
 
-        // CORREGIDO: Especificar las columnas en ON CONFLICT
+        // Actualizar progreso
         await pool.query(`
           INSERT INTO insignias_progreso (usuario_documento, insignia_id, valor_actual, fecha_registro)
           VALUES ($1, $2, $3, NOW())
@@ -178,7 +243,6 @@ export default class LogrosController {
           const { rows: yaDesbloqueada } = await pool.query(yaDesbloqueadaQuery, [usuarioDocumento, insignia.id]);
 
           if (yaDesbloqueada.length === 0 || !yaDesbloqueada[0].completada) {
-            // CORREGIDO: Especificar las columnas en ON CONFLICT
             await pool.query(`
               INSERT INTO usuario_insignias (usuario_documento, insignia_id, desbloqueada_en, completada)
               VALUES ($1, $2, NOW(), true)
@@ -232,6 +296,7 @@ export default class LogrosController {
           i.descripcion,
           i.imagen_url,
           i.xp_reward,
+          i.tipo,
           ui.desbloqueada_en
         FROM usuario_insignias ui
         JOIN insignias i ON ui.insignia_id = i.id
@@ -291,9 +356,9 @@ export default class LogrosController {
         END $$;
       `);
 
-      console.log('Constraints verificadas/creadas correctamente');
+      console.log('✅ Constraints verificadas/creadas correctamente');
     } catch (error) {
-      console.error('Error al crear constraints:', error);
+      console.error('❌ Error al crear constraints:', error);
     }
   }
 }

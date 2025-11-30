@@ -34,9 +34,6 @@ app.use('/api/metas', metasAhorroRoutes);
 app.use('/api/reportes', reporteRoutes);
 app.use('/api/logros', logrosRoutes);
 
-// Al iniciar la aplicación
-LogrosController.crearConstraintsSiNoExisten();
-
 app.use('/uploads', express.static(path.join(process.cwd(), 'uploads')));
 
 app.get('/', (req, res) => {

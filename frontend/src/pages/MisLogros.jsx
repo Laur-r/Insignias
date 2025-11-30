@@ -21,13 +21,71 @@ const MisLogros = () => {
     return usuario.documento;
   };
 
-  // Función para obtener la ruta correcta de la imagen
   const obtenerRutaImagen = (imagenUrl) => {
     if (!imagenUrl) return '/assets/badges/default-badge.png';
-    
-    // Extrae solo el nombre del archivo
     const nombreArchivo = imagenUrl.split('/').pop();
     return `/assets/badges/${nombreArchivo}`;
+  };
+
+  // ✅ NUEVA FUNCIÓN: Identificar series de insignias con niveles
+  const identificarSerie = (nombre) => {
+    // Extraer el nombre base sin "Nivel X"
+    const nombreBase = nombre.replace(/Nivel \d+/i, '').trim();
+    
+    // Identificar series conocidas
+    if (nombre.includes('Maratonista')) return 'maratonista';
+    if (nombre.includes('Rutina Financiera')) return 'rutina';
+    
+    return null; // No es una serie con niveles
+  };
+
+  // ✅ NUEVA FUNCIÓN: Agrupar insignias por series y obtener solo la relevante
+  const obtenerInsigniasRelevantes = (insignias) => {
+    const grupos = {};
+    const insigniasSinSerie = [];
+
+    // Agrupar por serie
+    insignias.forEach(insignia => {
+      const serie = identificarSerie(insignia.nombre);
+      
+      if (serie) {
+        if (!grupos[serie]) {
+          grupos[serie] = [];
+        }
+        grupos[serie].push(insignia);
+      } else {
+        insigniasSinSerie.push(insignia);
+      }
+    });
+
+    // Para cada serie, obtener solo la insignia relevante
+    const insigniasRelevantes = [];
+
+    Object.keys(grupos).forEach(serieKey => {
+      const serie = grupos[serieKey];
+      // Ordenar por valor_requerido (de menor a mayor)
+      serie.sort((a, b) => a.valor_requerido - b.valor_requerido);
+
+      let insigniaRelevante = null;
+
+      // Buscar el primer nivel NO completado
+      for (let i = 0; i < serie.length; i++) {
+        if (!serie[i].completada) {
+          insigniaRelevante = serie[i];
+          break;
+        }
+      }
+
+      // Si todos están completados, mostrar el último
+      if (!insigniaRelevante) {
+        insigniaRelevante = serie[serie.length - 1];
+      }
+
+      insigniasRelevantes.push(insigniaRelevante);
+    });
+
+    // Combinar insignias relevantes con las que no tienen serie
+    return [...insigniasRelevantes, ...insigniasSinSerie];
   };
 
   useEffect(() => {
@@ -45,7 +103,6 @@ const MisLogros = () => {
         return;
       }
 
-      // Intentar verificar progreso (pero continuar si falla)
       try {
         const verificarResponse = await fetch(`${API_URL}/verificar`, {
           method: 'POST',
@@ -60,7 +117,6 @@ const MisLogros = () => {
         console.warn('Error en verificación:', verificarError);
       }
 
-      // Obtener insignias
       const response = await fetch(`${API_URL}/${usuarioDocumento}`);
       
       if (!response.ok) {
@@ -70,19 +126,26 @@ const MisLogros = () => {
       const data = await response.json();
 
       if (data.success) {
-        const todas = [
+        const todasLasInsignias = [
           ...(data.data.insigniasPorTipo?.educacion || []),
           ...(data.data.insigniasPorTipo?.ahorro || []),
           ...(data.data.insigniasPorTipo?.habitos || []),
           ...(data.data.insigniasPorTipo?.transacciones || [])
         ];
         
-        setTodasInsignias(todas);
-        setInsigniasFiltradas(todas);
-        setStats(data.data.stats || {
-          xp_total: 0,
-          insignias_desbloqueadas: 0,
-          total_insignias: todas.length
+        // ✅ Aplicar filtrado de insignias relevantes
+        const insigniasRelevantes = obtenerInsigniasRelevantes(todasLasInsignias);
+        
+        setTodasInsignias(insigniasRelevantes);
+        setInsigniasFiltradas(insigniasRelevantes);
+        
+        // Calcular stats basados en TODAS las insignias (no solo las relevantes)
+        const totalDesbloqueadas = todasLasInsignias.filter(i => i.completada).length;
+        
+        setStats({
+          xp_total: data.data.stats?.xp_total || 0,
+          insignias_desbloqueadas: totalDesbloqueadas,
+          total_insignias: todasLasInsignias.length
         });
       }
     } catch (error) {
@@ -128,8 +191,12 @@ const MisLogros = () => {
         return `Crea ${restante} meta${restante > 1 ? 's' : ''} activa${restante > 1 ? 's' : ''} más`;
       case 'metas_completadas':
         return `Completa ${restante} meta${restante > 1 ? 's' : ''} más`;
-      case 'login_streak':
-        return `Inicia sesión ${restante} día${restante > 1 ? 's' : ''} más consecutivos`;
+      case 'metas_largo_plazo_completadas':
+        return `Completa ${restante} meta${restante > 1 ? 's' : ''} de largo plazo (6+ meses)`;
+      case 'metas_activas_consecutivas':
+        return `Mantén metas activas durante ${restante} mes${restante > 1 ? 'es' : ''} más consecutivos`;
+      case 'uso_semanal':
+        return `Usa FintraX ${restante} semana${restante > 1 ? 's' : ''} más (3+ días por semana)`;
       case 'resumen_mensual':
         return `Cierra ${restante} resumen${restante > 1 ? 'es' : ''} mensual${restante > 1 ? 'es' : ''} más`;
       case 'transacciones_registradas':
@@ -147,6 +214,14 @@ const MisLogros = () => {
       transacciones: 'Registros'
     };
     return tipos[tipo] || tipo;
+  };
+
+  // ✅ Función para obtener el nivel de la insignia
+  const obtenerNivelInsignia = (nombre) => {
+    if (nombre.includes('Nivel 1') || nombre.includes('Principiante')) return { nivel: 1, color: '#10b981' };
+    if (nombre.includes('Nivel 2')) return { nivel: 2, color: '#3b82f6' };
+    if (nombre.includes('Nivel 3') || nombre.includes('Experto')) return { nivel: 3, color: '#a855f7' };
+    return { nivel: null, color: '#60a5fa' };
   };
 
   if (loading) {
@@ -217,39 +292,69 @@ const MisLogros = () => {
         {insigniasFiltradas.length === 0 ? (
           <p className="no-insignias">No hay insignias en esta categoría</p>
         ) : (
-          insigniasFiltradas.map(insignia => (
-            <div
-              key={insignia.id}
-              className={`insignia-card-simple ${insignia.completada ? 'desbloqueada' : 'bloqueada'}`}
-              onClick={() => abrirDetalleInsignia(insignia)}
-            >
-              {/* Badge de imagen */}
-              <div className="insignia-badge">
-                <img
-                  src={obtenerRutaImagen(insignia.imagen_url)}
-                  alt={insignia.nombre}
-                  className="insignia-img"
-                  onError={(e) => {
-                    e.target.style.display = 'none';
-                    e.target.nextSibling.style.display = 'flex';
-                  }}
-                />
-                <div className="insignia-placeholder" style={{ display: 'none' }}>
-                  <span className="material-icons">workspace_premium</span>
+          insigniasFiltradas.map(insignia => {
+            const nivelInfo = obtenerNivelInsignia(insignia.nombre);
+            
+            return (
+              <div
+                key={insignia.id}
+                className={`insignia-card-simple ${insignia.completada ? 'desbloqueada' : 'bloqueada'}`}
+                onClick={() => abrirDetalleInsignia(insignia)}
+              >
+                {/* Badge de imagen */}
+                <div className="insignia-badge">
+                  <img
+                    src={obtenerRutaImagen(insignia.imagen_url)}
+                    alt={insignia.nombre}
+                    className="insignia-img"
+                    onError={(e) => {
+                      e.target.style.display = 'none';
+                      e.target.nextSibling.style.display = 'flex';
+                    }}
+                  />
+                  <div className="insignia-placeholder" style={{ display: 'none' }}>
+                    <span className="material-icons">workspace_premium</span>
+                  </div>
+                  
+                  {/* Badge de nivel */}
+                  {nivelInfo.nivel && (
+                    <div 
+                      className="insignia-nivel-badge"
+                      style={{ 
+                        background: nivelInfo.color,
+                        position: 'absolute',
+                        top: '8px',
+                        right: '8px',
+                        width: '28px',
+                        height: '28px',
+                        borderRadius: '50%',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        fontSize: '14px',
+                        fontWeight: '700',
+                        color: 'white',
+                        border: '2px solid rgba(255, 255, 255, 0.3)',
+                        boxShadow: '0 2px 8px rgba(0, 0, 0, 0.3)'
+                      }}
+                    >
+                      {nivelInfo.nivel}
+                    </div>
+                  )}
+                </div>
+
+                {/* Información */}
+                <div className="insignia-info-simple">
+                  <span className="insignia-tipo-badge">{getNombreTipo(insignia.tipo)}</span>
+                  <h3 className="insignia-nombre-simple">{insignia.nombre}</h3>
+                  <span className="insignia-xp-badge">
+                    <span className="material-icons">star</span>
+                    {insignia.xp_reward} XP
+                  </span>
                 </div>
               </div>
-
-              {/* Información */}
-              <div className="insignia-info-simple">
-                <span className="insignia-tipo-badge">{getNombreTipo(insignia.tipo)}</span>
-                <h3 className="insignia-nombre-simple">{insignia.nombre}</h3>
-                <span className="insignia-xp-badge">
-                  <span className="material-icons">star</span>
-                  {insignia.xp_reward} XP
-                </span>
-              </div>
-            </div>
-          ))
+            );
+          })
         )}
       </div>
 

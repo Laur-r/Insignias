@@ -5,11 +5,30 @@ import { useTransaccion } from '../components/Context/TransaccionContext';
 const MetasAhorro = () => {
   const { notificarCambio } = useTransaccion();
 
+  // ✅ FUNCIÓN para verificar progreso de logros
+  const verificarLogros = async () => {
+    try {
+      const usuarioDocumento = getUsuarioDocumento();
+      if (!usuarioDocumento) return;
+
+      await fetch('http://localhost:3000/api/logros/verificar', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ usuarioDocumento })
+      });
+    } catch (error) {
+      console.log('Error al verificar logros (no crítico):', error);
+    }
+  };
+
   const notificarCambioDashboard = () => {
     notificarCambio();
     window.dispatchEvent(new Event('dashboardUpdate'));
     const current = Number(localStorage.getItem('dashboard_actualizar') || '0');
     localStorage.setItem('dashboard_actualizar', (current + 1).toString());
+    
+    // ✅ VERIFICAR LOGROS después de cada cambio
+    verificarLogros();
   };
 
   const [metas, setMetas] = useState([]);
@@ -126,7 +145,7 @@ const MetasAhorro = () => {
         setMostrarFormulario(false);
         limpiarFormulario();
         cargarDatos();
-        notificarCambioDashboard();
+        notificarCambioDashboard(); // ✅ INCLUYE VERIFICACIÓN DE LOGROS
       } else {
         alert(data.message || 'Error al crear la meta');
       }
@@ -165,7 +184,7 @@ const MetasAhorro = () => {
         setMetaEditando(null);
         limpiarFormulario();
         cargarDatos();
-        notificarCambioDashboard();
+        notificarCambioDashboard(); // ✅ INCLUYE VERIFICACIÓN DE LOGROS
       } else {
         alert(data.message || 'Error al actualizar la meta');
       }
@@ -202,7 +221,7 @@ const MetasAhorro = () => {
         }
 
         cargarDatos();
-        notificarCambioDashboard();
+        notificarCambioDashboard(); // ✅ INCLUYE VERIFICACIÓN DE LOGROS
       } else {
         alert(data.message || 'Error al eliminar la meta');
       }
@@ -236,7 +255,7 @@ const MetasAhorro = () => {
         setMostrarModalAporte(false);
         setAporte({ monto: '', nota: '' });
         cargarDatos();
-        notificarCambioDashboard();
+        notificarCambioDashboard(); // ✅ INCLUYE VERIFICACIÓN DE LOGROS
       } else {
         alert(data.message || 'Error al realizar el aporte');
       }
@@ -262,7 +281,7 @@ const MetasAhorro = () => {
       if (data.success) {
         alert(data.message);
         cargarDatos();
-        notificarCambioDashboard();
+        notificarCambioDashboard(); // ✅ INCLUYE VERIFICACIÓN DE LOGROS
       } else {
         alert(data.message || 'Error al cambiar estado');
       }

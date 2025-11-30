@@ -15,6 +15,22 @@ function GestionFinanciera() {
   const [error, setError] = useState(null);
   const { notificarCambio } = useTransaccion();
 
+  // ✅ FUNCIÓN para verificar progreso de logros
+  const verificarLogros = async () => {
+    try {
+      const usuarioDocumento = getUsuarioDocumento();
+      if (!usuarioDocumento) return;
+
+      await fetch('http://localhost:3000/api/logros/verificar', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ usuarioDocumento })
+      });
+    } catch (error) {
+      console.log('Error al verificar logros (no crítico):', error);
+    }
+  };
+
   // ✅ FUNCIÓN MEJORADA para notificar cambios
   const notificarCambioDashboard = () => {
     notificarCambio(); // Context normal
@@ -25,6 +41,9 @@ function GestionFinanciera() {
     // ✅ FORZAR actualización en localStorage para otras pestañas
     const current = Number(localStorage.getItem('dashboard_actualizar') || '0');
     localStorage.setItem('dashboard_actualizar', (current + 1).toString());
+
+    // ✅ VERIFICAR LOGROS después de cada cambio
+    verificarLogros();
   };
 
   const [formDataTransaccion, setFormDataTransaccion] = useState({
@@ -103,7 +122,6 @@ function GestionFinanciera() {
   };
 
   const cargarTransacciones = async () => {
-
     setLoading(true);
     setError(null);
 
@@ -173,7 +191,7 @@ function GestionFinanciera() {
 
         alert('Transacción eliminada exitosamente');
         cargarTransacciones();
-        notificarCambioDashboard(); // ✅ USAR LA NUEVA FUNCIÓN
+        notificarCambioDashboard(); // ✅ INCLUYE VERIFICACIÓN DE LOGROS
       } catch (err) {
         console.error('Error al eliminar:', err);
         alert(err.message || 'Error al eliminar la transacción');
@@ -256,7 +274,7 @@ function GestionFinanciera() {
       alert(editingItem && editingItem.id ? 'Transacción actualizada exitosamente' : 'Transacción creada exitosamente');
       closeModal();
       cargarTransacciones();
-      notificarCambioDashboard(); // ✅ USAR LA NUEVA FUNCIÓN
+      notificarCambioDashboard(); // ✅ INCLUYE VERIFICACIÓN DE LOGROS
 
     } catch (err) {
       console.error('Error al guardar:', err);
