@@ -11,9 +11,7 @@ import reporteRoutes from './routes/reporteRoutes.js';
 import logrosRoutes from './routes/LogrosRoutes.js';
 import LogrosController from './controllers/LogrosController.js';
 
-
 import path from 'path';
-
 
 dotenv.config({path: '../.env'});
 const app = express();
@@ -40,9 +38,10 @@ app.get('/', (req, res) => {
   res.send('Backend de FintraX funcionando');
 });
 
-
+// ✅ Inicializar constraints al arrancar el servidor
 const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => {
-  console.log(`Servidor corriendo en el puerto ${PORT}`);
+app.listen(PORT, async () => {
+  console.log(`🚀 Servidor corriendo en el puerto ${PORT}`);
+  console.log('🔧 Verificando constraints de base de datos...');
+  await LogrosController.crearConstraintsSiNoExisten();
 });
-

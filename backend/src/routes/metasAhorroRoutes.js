@@ -1,33 +1,28 @@
-// routes/metasAhorro.js
+// backend/src/routes/metasAhorroRoutes.js
 import express from 'express';
 import MetasAhorroController from '../controllers/MetasAhorroController.js';
+import { verificarLogrosAutomaticamente } from '../middleware/verificarLogros.js';
 
 const router = express.Router();
 
-// Rutas específicas ANTES de las rutas con parámetros
+// ⚠️ IMPORTANTE: Las rutas más específicas DEBEN ir ANTES de las rutas con parámetros dinámicos
+
+// Rutas específicas PRIMERO
 router.get('/resumen/:usuarioDocumento', MetasAhorroController.obtenerResumen);
 router.get('/detalle/:id', MetasAhorroController.obtenerMeta);
-router.get('/:id/historial', MetasAhorroController.obtenerHistorial);
 
-// Listar metas (debe ir DESPUÉS de las rutas específicas)
+// Rutas de acciones sobre metas específicas (con verificación de logros)
+router.get('/:id/historial', MetasAhorroController.obtenerHistorial);
+router.post('/:id/aportar', verificarLogrosAutomaticamente, MetasAhorroController.aportarMeta);
+router.post('/:id/retirar', verificarLogrosAutomaticamente, MetasAhorroController.retirarMeta);
+router.put('/:id/estado', verificarLogrosAutomaticamente, MetasAhorroController.cambiarEstado);
+
+// Ruta general para listar metas (DESPUÉS de las específicas)
 router.get('/:usuarioDocumento', MetasAhorroController.listarMetas);
 
-// Crear nueva meta
-router.post('/', MetasAhorroController.crearMeta);
-
-// Actualizar meta
-router.put('/:id', MetasAhorroController.actualizarMeta);
-
-// Eliminar meta
-router.delete('/:id', MetasAhorroController.eliminarMeta);
-
-// Aportar a meta
-router.post('/:id/aportar', MetasAhorroController.aportarMeta);
-
-// Retirar de meta
-router.post('/:id/retirar', MetasAhorroController.retirarMeta);
-
-// Cambiar estado
-router.put('/:id/estado', MetasAhorroController.cambiarEstado);
+// ✅ Rutas de modificación CON verificación automática de logros
+router.post('/', verificarLogrosAutomaticamente, MetasAhorroController.crearMeta);
+router.put('/:id', verificarLogrosAutomaticamente, MetasAhorroController.actualizarMeta);
+router.delete('/:id', verificarLogrosAutomaticamente, MetasAhorroController.eliminarMeta);
 
 export default router;

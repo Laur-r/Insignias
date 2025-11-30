@@ -5,7 +5,8 @@ const MisLogros = () => {
   const [loading, setLoading] = useState(true);
   const [todasInsignias, setTodasInsignias] = useState([]);
   const [insigniasFiltradas, setInsigniasFiltradas] = useState([]);
-  const [filtroActivo, setFiltroActivo] = useState('todas');
+  const [filtroTipo, setFiltroTipo] = useState('todas');
+  const [filtroEstado, setFiltroEstado] = useState('todas'); // 'todas', 'desbloqueadas', 'bloqueadas'
   const [stats, setStats] = useState({
     xp_total: 0,
     insignias_desbloqueadas: 0,
@@ -27,24 +28,21 @@ const MisLogros = () => {
     return `/assets/badges/${nombreArchivo}`;
   };
 
-  // ✅ NUEVA FUNCIÓN: Identificar series de insignias con niveles
+  // Identificar series de insignias con niveles
   const identificarSerie = (nombre) => {
-    // Extraer el nombre base sin "Nivel X"
     const nombreBase = nombre.replace(/Nivel \d+/i, '').trim();
     
-    // Identificar series conocidas
     if (nombre.includes('Maratonista')) return 'maratonista';
     if (nombre.includes('Rutina Financiera')) return 'rutina';
     
-    return null; // No es una serie con niveles
+    return null;
   };
 
-  // ✅ NUEVA FUNCIÓN: Agrupar insignias por series y obtener solo la relevante
+  // Agrupar insignias por series y obtener solo la relevante
   const obtenerInsigniasRelevantes = (insignias) => {
     const grupos = {};
     const insigniasSinSerie = [];
 
-    // Agrupar por serie
     insignias.forEach(insignia => {
       const serie = identificarSerie(insignia.nombre);
       
@@ -58,17 +56,14 @@ const MisLogros = () => {
       }
     });
 
-    // Para cada serie, obtener solo la insignia relevante
     const insigniasRelevantes = [];
 
     Object.keys(grupos).forEach(serieKey => {
       const serie = grupos[serieKey];
-      // Ordenar por valor_requerido (de menor a mayor)
       serie.sort((a, b) => a.valor_requerido - b.valor_requerido);
 
       let insigniaRelevante = null;
 
-      // Buscar el primer nivel NO completado
       for (let i = 0; i < serie.length; i++) {
         if (!serie[i].completada) {
           insigniaRelevante = serie[i];
@@ -76,7 +71,6 @@ const MisLogros = () => {
         }
       }
 
-      // Si todos están completados, mostrar el último
       if (!insigniaRelevante) {
         insigniaRelevante = serie[serie.length - 1];
       }
@@ -84,13 +78,28 @@ const MisLogros = () => {
       insigniasRelevantes.push(insigniaRelevante);
     });
 
-    // Combinar insignias relevantes con las que no tienen serie
     return [...insigniasRelevantes, ...insigniasSinSerie];
   };
 
   useEffect(() => {
     cargarDatos();
+    
+    // Escuchar evento personalizado para recargar logros
+    const handleRecargarLogros = () => {
+      console.log('🔄 Recargando logros...');
+      cargarDatos();
+    };
+    
+    window.addEventListener('recargarLogros', handleRecargarLogros);
+    
+    return () => {
+      window.removeEventListener('recargarLogros', handleRecargarLogros);
+    };
   }, []);
+  
+  useEffect(() => {
+    aplicarFiltros();
+  }, [filtroTipo, filtroEstado, todasInsignias]);
 
   const cargarDatos = async () => {
     setLoading(true);
@@ -110,7 +119,12 @@ const MisLogros = () => {
           body: JSON.stringify({ usuarioDocumento })
         });
 
-        if (!verificarResponse.ok) {
+        if (verificarResponse.ok) {
+          const verificarData = await verificarResponse.json();
+          if (verificarData.data?.insigniasDesbloqueadas?.length > 0) {
+            console.log('🎉 Nuevas insignias desbloqueadas:', verificarData.data.insigniasDesbloqueadas);
+          }
+        } else {
           console.warn('Verificación falló, pero continuando...');
         }
       } catch (verificarError) {
@@ -133,13 +147,10 @@ const MisLogros = () => {
           ...(data.data.insigniasPorTipo?.transacciones || [])
         ];
         
-        // ✅ Aplicar filtrado de insignias relevantes
         const insigniasRelevantes = obtenerInsigniasRelevantes(todasLasInsignias);
         
         setTodasInsignias(insigniasRelevantes);
-        setInsigniasFiltradas(insigniasRelevantes);
         
-        // Calcular stats basados en TODAS las insignias (no solo las relevantes)
         const totalDesbloqueadas = todasLasInsignias.filter(i => i.completada).length;
         
         setStats({
@@ -155,13 +166,22 @@ const MisLogros = () => {
     }
   };
 
-  const filtrarInsignias = (tipo) => {
-    setFiltroActivo(tipo);
-    if (tipo === 'todas') {
-      setInsigniasFiltradas(todasInsignias);
-    } else {
-      setInsigniasFiltradas(todasInsignias.filter(i => i.tipo === tipo));
+  const aplicarFiltros = () => {
+    let insigniasFiltradas = [...todasInsignias];
+
+    // Filtro por tipo
+    if (filtroTipo !== 'todas') {
+      insigniasFiltradas = insigniasFiltradas.filter(i => i.tipo === filtroTipo);
     }
+
+    // Filtro por estado
+    if (filtroEstado === 'desbloqueadas') {
+      insigniasFiltradas = insigniasFiltradas.filter(i => i.completada);
+    } else if (filtroEstado === 'bloqueadas') {
+      insigniasFiltradas = insigniasFiltradas.filter(i => !i.completada);
+    }
+
+    setInsigniasFiltradas(insigniasFiltradas);
   };
 
   const abrirDetalleInsignia = (insignia) => {
@@ -175,6 +195,12 @@ const MisLogros = () => {
     { id: 'educacion', nombre: 'Educación', icono: 'school' },
     { id: 'habitos', nombre: 'Hábitos', icono: 'event_available' },
     { id: 'transacciones', nombre: 'Registros', icono: 'receipt_long' }
+  ];
+
+  const estadosFiltro = [
+    { id: 'todas', nombre: 'Todas' },
+    { id: 'desbloqueadas', nombre: 'Desbloqueadas' },
+    { id: 'bloqueadas', nombre: 'Bloqueadas' }
   ];
 
   const obtenerMensajeProgreso = (insignia) => {
@@ -216,7 +242,6 @@ const MisLogros = () => {
     return tipos[tipo] || tipo;
   };
 
-  // ✅ Función para obtener el nivel de la insignia
   const obtenerNivelInsignia = (nombre) => {
     if (nombre.includes('Nivel 1') || nombre.includes('Principiante')) return { nivel: 1, color: '#10b981' };
     if (nombre.includes('Nivel 2')) return { nivel: 2, color: '#3b82f6' };
@@ -234,13 +259,11 @@ const MisLogros = () => {
 
   return (
     <div className="logros-container">
-      {/* Header */}
       <div className="logros-header">
         <h1 className="logros-title">Mis Logros</h1>
         <p className="logros-subtitle">Desbloquea insignias y gana experiencia</p>
       </div>
 
-      {/* Stats Cards */}
       <div className="logros-stats-cards">
         <div className="stat-card-logros">
           <div className="stat-icon-logros">
@@ -278,8 +301,8 @@ const MisLogros = () => {
         {categorias.map(cat => (
           <button
             key={cat.id}
-            className={`filtro-btn ${filtroActivo === cat.id ? 'activo' : ''}`}
-            onClick={() => filtrarInsignias(cat.id)}
+            className={`filtro-btn ${filtroTipo === cat.id ? 'activo' : ''}`}
+            onClick={() => setFiltroTipo(cat.id)}
           >
             <span className="material-icons">{cat.icono}</span>
             {cat.nombre}
@@ -287,8 +310,21 @@ const MisLogros = () => {
         ))}
       </div>
 
+      {/* Filtros por estado (desbloqueadas/bloqueadas) */}
+      <div className="filtros-estado">
+        {estadosFiltro.map(estado => (
+          <button
+            key={estado.id}
+            className={`filtro-estado-btn ${filtroEstado === estado.id ? 'activo' : ''}`}
+            onClick={() => setFiltroEstado(estado.id)}
+          >
+            {estado.nombre}
+          </button>
+        ))}
+      </div>
+
       {/* Grid de insignias */}
-      <div className="insignias-grid-simple">
+      <div className="insignias-grid-grande">
         {insigniasFiltradas.length === 0 ? (
           <p className="no-insignias">No hay insignias en esta categoría</p>
         ) : (
@@ -298,43 +334,41 @@ const MisLogros = () => {
             return (
               <div
                 key={insignia.id}
-                className={`insignia-card-simple ${insignia.completada ? 'desbloqueada' : 'bloqueada'}`}
+                className={`insignia-card-grande ${insignia.completada ? 'desbloqueada' : 'bloqueada'}`}
                 onClick={() => abrirDetalleInsignia(insignia)}
               >
-                {/* Badge de imagen */}
-                <div className="insignia-badge">
+                <div className="insignia-badge-grande">
                   <img
                     src={obtenerRutaImagen(insignia.imagen_url)}
                     alt={insignia.nombre}
-                    className="insignia-img"
+                    className="insignia-img-grande"
                     onError={(e) => {
                       e.target.style.display = 'none';
                       e.target.nextSibling.style.display = 'flex';
                     }}
                   />
-                  <div className="insignia-placeholder" style={{ display: 'none' }}>
+                  <div className="insignia-placeholder-grande" style={{ display: 'none' }}>
                     <span className="material-icons">workspace_premium</span>
                   </div>
                   
-                  {/* Badge de nivel */}
                   {nivelInfo.nivel && (
                     <div 
                       className="insignia-nivel-badge"
                       style={{ 
                         background: nivelInfo.color,
                         position: 'absolute',
-                        top: '8px',
-                        right: '8px',
-                        width: '28px',
-                        height: '28px',
+                        top: '12px',
+                        right: '12px',
+                        width: '36px',
+                        height: '36px',
                         borderRadius: '50%',
                         display: 'flex',
                         alignItems: 'center',
                         justifyContent: 'center',
-                        fontSize: '14px',
+                        fontSize: '16px',
                         fontWeight: '700',
                         color: 'white',
-                        border: '2px solid rgba(255, 255, 255, 0.3)',
+                        border: '3px solid rgba(255, 255, 255, 0.3)',
                         boxShadow: '0 2px 8px rgba(0, 0, 0, 0.3)'
                       }}
                     >
@@ -343,10 +377,24 @@ const MisLogros = () => {
                   )}
                 </div>
 
-                {/* Información */}
-                <div className="insignia-info-simple">
+                <div className="insignia-info-grande">
                   <span className="insignia-tipo-badge">{getNombreTipo(insignia.tipo)}</span>
-                  <h3 className="insignia-nombre-simple">{insignia.nombre}</h3>
+                  <h3 className="insignia-nombre-grande">{insignia.nombre}</h3>
+                  <p className="insignia-descripcion-corta">{insignia.descripcion}</p>
+                  
+                  {/* Barra de progreso */}
+                  <div className="progreso-mini">
+                    <div className="progreso-barra-mini">
+                      <div
+                        className="progreso-fill-mini"
+                        style={{ width: `${insignia.porcentaje_progreso}%` }}
+                      />
+                    </div>
+                    <span className="progreso-texto-mini">
+                      {insignia.progreso_actual}/{insignia.valor_requerido}
+                    </span>
+                  </div>
+
                   <span className="insignia-xp-badge">
                     <span className="material-icons">star</span>
                     {insignia.xp_reward} XP
@@ -366,7 +414,6 @@ const MisLogros = () => {
               <span className="material-icons">close</span>
             </button>
 
-            {/* Header con imagen */}
             <div className={`modal-header-logros ${insigniaSeleccionada.completada ? 'completada' : 'bloqueada'}`}>
               <div className="modal-badge-grande">
                 <img
@@ -401,14 +448,12 @@ const MisLogros = () => {
               </div>
             </div>
 
-            {/* Body */}
             <div className="modal-body-logros">
               <div className="modal-descripcion-section">
                 <h3>Descripción</h3>
                 <p>{insigniaSeleccionada.descripcion}</p>
               </div>
 
-              {/* Progreso */}
               <div className="modal-progreso-section">
                 <div className="progreso-header-modal">
                   <h3>Tu Progreso</h3>
@@ -435,7 +480,6 @@ const MisLogros = () => {
                 </p>
               </div>
 
-              {/* Recompensa */}
               <div className="modal-recompensa-section">
                 <span className="material-icons">star</span>
                 <div>

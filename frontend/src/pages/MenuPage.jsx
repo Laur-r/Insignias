@@ -109,7 +109,7 @@ const MenuPage = () => {
       case "perfil":
         return <MiPerfil />;
         case "logros":
-  return <MisLogros />;
+        return <MisLogros />;
       default:
         return (
           <>

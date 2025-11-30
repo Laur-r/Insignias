@@ -31,20 +31,25 @@ function GestionFinanciera() {
     }
   };
 
-  // ✅ FUNCIÓN MEJORADA para notificar cambios
-  const notificarCambioDashboard = () => {
-    notificarCambio(); // Context normal
+// Agregar estas líneas en la función notificarCambioDashboard
 
-    // ✅ DISPARAR evento personalizado para el Dashboard en la MISMA pestaña
-    window.dispatchEvent(new Event('dashboardUpdate'));
+// ✅ FUNCIÓN MEJORADA para notificar cambios
+const notificarCambioDashboard = () => {
+  notificarCambio(); // Context normal
 
-    // ✅ FORZAR actualización en localStorage para otras pestañas
-    const current = Number(localStorage.getItem('dashboard_actualizar') || '0');
-    localStorage.setItem('dashboard_actualizar', (current + 1).toString());
+  // ✅ DISPARAR evento personalizado para el Dashboard en la MISMA pestaña
+  window.dispatchEvent(new Event('dashboardUpdate'));
 
-    // ✅ VERIFICAR LOGROS después de cada cambio
-    verificarLogros();
-  };
+  // ✅ DISPARAR evento para recargar Mis Logros
+  window.dispatchEvent(new Event('recargarLogros'));
+
+  // ✅ FORZAR actualización en localStorage para otras pestañas
+  const current = Number(localStorage.getItem('dashboard_actualizar') || '0');
+  localStorage.setItem('dashboard_actualizar', (current + 1).toString());
+
+  // ✅ VERIFICAR LOGROS después de cada cambio
+  verificarLogros();
+};
 
   const [formDataTransaccion, setFormDataTransaccion] = useState({
     categoria_id: '',

@@ -21,9 +21,14 @@ const MetasAhorro = () => {
     }
   };
 
+
   const notificarCambioDashboard = () => {
     notificarCambio();
     window.dispatchEvent(new Event('dashboardUpdate'));
+    
+    // ✅ DISPARAR evento para recargar Mis Logros
+    window.dispatchEvent(new Event('recargarLogros'));
+    
     const current = Number(localStorage.getItem('dashboard_actualizar') || '0');
     localStorage.setItem('dashboard_actualizar', (current + 1).toString());
     
