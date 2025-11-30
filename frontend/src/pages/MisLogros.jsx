@@ -6,7 +6,7 @@ const MisLogros = () => {
   const [todasInsignias, setTodasInsignias] = useState([]);
   const [insigniasFiltradas, setInsigniasFiltradas] = useState([]);
   const [filtroTipo, setFiltroTipo] = useState('todas');
-  const [filtroEstado, setFiltroEstado] = useState('todas'); // 'todas', 'desbloqueadas', 'bloqueadas'
+  const [filtroEstado, setFiltroEstado] = useState('todas');
   const [stats, setStats] = useState({
     xp_total: 0,
     insignias_desbloqueadas: 0,
@@ -28,7 +28,6 @@ const MisLogros = () => {
     return `/assets/badges/${nombreArchivo}`;
   };
 
-  // Identificar series de insignias con niveles
   const identificarSerie = (nombre) => {
     const nombreBase = nombre.replace(/Nivel \d+/i, '').trim();
     
@@ -38,7 +37,6 @@ const MisLogros = () => {
     return null;
   };
 
-  // Agrupar insignias por series y obtener solo la relevante
   const obtenerInsigniasRelevantes = (insignias) => {
     const grupos = {};
     const insigniasSinSerie = [];
@@ -84,7 +82,6 @@ const MisLogros = () => {
   useEffect(() => {
     cargarDatos();
     
-    // Escuchar evento personalizado para recargar logros
     const handleRecargarLogros = () => {
       console.log('🔄 Recargando logros...');
       cargarDatos();
@@ -181,6 +178,13 @@ const MisLogros = () => {
       insigniasFiltradas = insigniasFiltradas.filter(i => !i.completada);
     }
 
+    // ✅ ORDENAR: Desbloqueadas primero, bloqueadas después
+    insigniasFiltradas.sort((a, b) => {
+      if (a.completada && !b.completada) return -1;
+      if (!a.completada && b.completada) return 1;
+      return 0;
+    });
+
     setInsigniasFiltradas(insigniasFiltradas);
   };
 
@@ -204,7 +208,7 @@ const MisLogros = () => {
   ];
 
   const obtenerMensajeProgreso = (insignia) => {
-    const restante = insignia.valor_requerido - insignia.progreso_actual;
+    const restante = Math.max(0, insignia.valor_requerido - insignia.progreso_actual);
     
     if (insignia.completada) {
       return `¡Insignia desbloqueada el ${new Date(insignia.desbloqueada_en).toLocaleDateString('es-CO')}!`;
@@ -212,21 +216,21 @@ const MisLogros = () => {
 
     switch (insignia.condicion_tipo) {
       case 'cursos_completados':
-        return `Completa ${restante} curso${restante > 1 ? 's' : ''} más`;
+        return restante === 0 ? '¡Completa!' : `Completa ${restante} curso${restante > 1 ? 's' : ''} más`;
       case 'metas_activas':
-        return `Crea ${restante} meta${restante > 1 ? 's' : ''} activa${restante > 1 ? 's' : ''} más`;
+        return restante === 0 ? '¡Completa!' : `Crea ${restante} meta${restante > 1 ? 's' : ''} activa${restante > 1 ? 's' : ''} más`;
       case 'metas_completadas':
-        return `Completa ${restante} meta${restante > 1 ? 's' : ''} más`;
+        return restante === 0 ? '¡Completa!' : `Completa ${restante} meta${restante > 1 ? 's' : ''} más`;
       case 'metas_largo_plazo_completadas':
-        return `Completa ${restante} meta${restante > 1 ? 's' : ''} de largo plazo (6+ meses)`;
+        return restante === 0 ? '¡Completa!' : `Completa ${restante} meta${restante > 1 ? 's' : ''} de largo plazo (6+ meses)`;
       case 'metas_activas_consecutivas':
-        return `Mantén metas activas durante ${restante} mes${restante > 1 ? 'es' : ''} más consecutivos`;
+        return restante === 0 ? '¡Completa!' : `Mantén metas activas durante ${restante} mes${restante > 1 ? 'es' : ''} más consecutivos`;
       case 'uso_semanal':
-        return `Usa FintraX ${restante} semana${restante > 1 ? 's' : ''} más (3+ días por semana)`;
+        return restante === 0 ? '¡Completa!' : `Usa FintraX ${restante} semana${restante > 1 ? 's' : ''} más (3+ días por semana)`;
       case 'resumen_mensual':
-        return `Cierra ${restante} resumen${restante > 1 ? 'es' : ''} mensual${restante > 1 ? 'es' : ''} más`;
+        return restante === 0 ? '¡Completa!' : `Cierra ${restante} resumen${restante > 1 ? 'es' : ''} mensual${restante > 1 ? 'es' : ''} más`;
       case 'transacciones_registradas':
-        return `Registra ${restante} transacción${restante > 1 ? 'es' : ''} más`;
+        return restante === 0 ? '¡Completa!' : `Registra ${restante} transacción${restante > 1 ? 'es' : ''} más`;
       default:
         return 'Sigue progresando';
     }
@@ -242,11 +246,10 @@ const MisLogros = () => {
     return tipos[tipo] || tipo;
   };
 
-  const obtenerNivelInsignia = (nombre) => {
-    if (nombre.includes('Nivel 1') || nombre.includes('Principiante')) return { nivel: 1, color: '#10b981' };
-    if (nombre.includes('Nivel 2')) return { nivel: 2, color: '#3b82f6' };
-    if (nombre.includes('Nivel 3') || nombre.includes('Experto')) return { nivel: 3, color: '#a855f7' };
-    return { nivel: null, color: '#60a5fa' };
+  // ✅ CALCULAR PORCENTAJE LIMITADO A 100%
+  const calcularPorcentajeLimitado = (progreso, requerido) => {
+    const porcentaje = (progreso / requerido) * 100;
+    return Math.min(porcentaje, 100);
   };
 
   if (loading) {
@@ -296,7 +299,6 @@ const MisLogros = () => {
         </div>
       </div>
 
-      {/* Filtros por categoría */}
       <div className="filtros-categorias">
         {categorias.map(cat => (
           <button
@@ -310,7 +312,6 @@ const MisLogros = () => {
         ))}
       </div>
 
-      {/* Filtros por estado (desbloqueadas/bloqueadas) */}
       <div className="filtros-estado">
         {estadosFiltro.map(estado => (
           <button
@@ -323,13 +324,13 @@ const MisLogros = () => {
         ))}
       </div>
 
-      {/* Grid de insignias */}
       <div className="insignias-grid-grande">
         {insigniasFiltradas.length === 0 ? (
           <p className="no-insignias">No hay insignias en esta categoría</p>
         ) : (
           insigniasFiltradas.map(insignia => {
-            const nivelInfo = obtenerNivelInsignia(insignia.nombre);
+            // ✅ Calcular porcentaje limitado a 100%
+            const porcentajeLimitado = calcularPorcentajeLimitado(insignia.progreso_actual, insignia.valor_requerido);
             
             return (
               <div
@@ -337,6 +338,7 @@ const MisLogros = () => {
                 className={`insignia-card-grande ${insignia.completada ? 'desbloqueada' : 'bloqueada'}`}
                 onClick={() => abrirDetalleInsignia(insignia)}
               >
+                {/* ✅ SIN BADGE DE NIVEL */}
                 <div className="insignia-badge-grande">
                   <img
                     src={obtenerRutaImagen(insignia.imagen_url)}
@@ -350,31 +352,6 @@ const MisLogros = () => {
                   <div className="insignia-placeholder-grande" style={{ display: 'none' }}>
                     <span className="material-icons">workspace_premium</span>
                   </div>
-                  
-                  {nivelInfo.nivel && (
-                    <div 
-                      className="insignia-nivel-badge"
-                      style={{ 
-                        background: nivelInfo.color,
-                        position: 'absolute',
-                        top: '12px',
-                        right: '12px',
-                        width: '36px',
-                        height: '36px',
-                        borderRadius: '50%',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        fontSize: '16px',
-                        fontWeight: '700',
-                        color: 'white',
-                        border: '3px solid rgba(255, 255, 255, 0.3)',
-                        boxShadow: '0 2px 8px rgba(0, 0, 0, 0.3)'
-                      }}
-                    >
-                      {nivelInfo.nivel}
-                    </div>
-                  )}
                 </div>
 
                 <div className="insignia-info-grande">
@@ -382,16 +359,15 @@ const MisLogros = () => {
                   <h3 className="insignia-nombre-grande">{insignia.nombre}</h3>
                   <p className="insignia-descripcion-corta">{insignia.descripcion}</p>
                   
-                  {/* Barra de progreso */}
                   <div className="progreso-mini">
                     <div className="progreso-barra-mini">
                       <div
                         className="progreso-fill-mini"
-                        style={{ width: `${insignia.porcentaje_progreso}%` }}
+                        style={{ width: `${porcentajeLimitado}%` }}
                       />
                     </div>
                     <span className="progreso-texto-mini">
-                      {insignia.progreso_actual}/{insignia.valor_requerido}
+                      {Math.min(insignia.progreso_actual, insignia.valor_requerido)}/{insignia.valor_requerido}
                     </span>
                   </div>
 
@@ -406,7 +382,6 @@ const MisLogros = () => {
         )}
       </div>
 
-      {/* Modal de detalle */}
       {mostrarModal && insigniaSeleccionada && (
         <div className="modal-overlay-logros" onClick={() => setMostrarModal(false)}>
           <div className="modal-logros-detalle" onClick={(e) => e.stopPropagation()}>
@@ -458,17 +433,17 @@ const MisLogros = () => {
                 <div className="progreso-header-modal">
                   <h3>Tu Progreso</h3>
                   <span className="progreso-porcentaje-modal">
-                    {insigniaSeleccionada.porcentaje_progreso}%
+                    {calcularPorcentajeLimitado(insigniaSeleccionada.progreso_actual, insigniaSeleccionada.valor_requerido).toFixed(1)}%
                   </span>
                 </div>
                 <div className="progreso-barra-modal">
                   <div
                     className="progreso-fill-modal"
-                    style={{ width: `${insigniaSeleccionada.porcentaje_progreso}%` }}
+                    style={{ width: `${calcularPorcentajeLimitado(insigniaSeleccionada.progreso_actual, insigniaSeleccionada.valor_requerido)}%` }}
                   />
                 </div>
                 <div className="progreso-numeros-modal">
-                  <span>{insigniaSeleccionada.progreso_actual} / {insigniaSeleccionada.valor_requerido}</span>
+                  <span>{Math.min(insigniaSeleccionada.progreso_actual, insigniaSeleccionada.valor_requerido)} / {insigniaSeleccionada.valor_requerido}</span>
                   {insigniaSeleccionada.completada && (
                     <span className="fecha-desbloqueo">
                       Desbloqueada: {new Date(insigniaSeleccionada.desbloqueada_en).toLocaleDateString('es-CO')}
